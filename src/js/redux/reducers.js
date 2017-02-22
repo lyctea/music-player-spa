@@ -88,6 +88,38 @@ export const musicState = (preState = initMusicState,action) => {
                     });
             }
             case REQUESTLYRIC:
-                    return objectAssign({},)
+                    return objectAssign({},preState,{isFetchingLyric:action.isFetchingLyric});
+            case RECEIVELYRIC:
+                    if(preState.song_id!==action.fetchSongId){
+                            return preState
+                    }
+                    return objectAssign({},preState,{
+                            isFetchingLyric:action.isFetchingLyric,
+                            lrcContent:action.lrcContent
+                    });
+            default:
+                    return preState;
         }
 }
+
+//本地列表 Reducer;localPlaylist
+export const localPlayList = (preState = initLocalPlayList,action) => {
+        switch (action.type){
+            case UPDATELOCALLIST:
+                    return objectAssign({},preState,{
+                            length:preState.length + action.items.length,
+                            song_list:preState.song_list.concat(action.items)
+                    });
+            case DELETEFROMLOCALLIST:
+                    var preSongList = preState.song_list;
+                    preSongList.splice(action.index,1);
+                    return objectAssign({},preState,{
+                            length:preSongList.length,
+                        song_list:preSongList
+                    })
+            default:
+                    return preState
+        }
+
+}
+
