@@ -123,3 +123,39 @@ export const localPlayList = (preState = initLocalPlayList,action) => {
 
 }
 
+//频道列表Reducer channelPlayList
+export const channelPlayList = (preState=initChannelPlayList,action) => {
+        switch (action.type){
+            case REQUESTCHANNELLIST:
+                    return objectAssign({},preState,{
+                            isFetching: true,
+                        fetchingChannel:action.channel_type
+                    });
+            case RECEIVECHANNELLIST:
+                    let state = preState;
+                    state.isFetching = false;
+                    state.success = true;
+                    let post = action.items;
+                    let channel_type = post.channel_type;
+                    if(state[channel_type]){
+                            state[channel_type].song_list.push.apply(state[channel_type].song_list,
+                            post.list.song_list);
+                    }else{
+                            state[channel_type] = post.list;
+                    }
+                state[channel_type].length = state[channel_type].song_list.length;
+                return objectAssign({},preState,state);
+            case FAILQUERYCHANNELLIST:
+                if(preState.fetchingChannel === action.channel_type){
+                    return objectAssign({},preState,{
+                        isFetching: action.isFetching,
+                        success: action.success
+                    });
+                }else{
+                    return preState;
+                }
+            default:
+                return preState;
+        }
+}
+
